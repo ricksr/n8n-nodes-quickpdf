@@ -1,0 +1,20 @@
+# Local n8n with n8n-nodes-quickpdf (no npm install in UI — dev mount).
+# Run: npm run n8n:local  (or docker compose -f docker-compose.n8n.yml up)
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:1.73.1
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_CUSTOM_EXTENSIONS=/custom
+      - N8N_COMMUNITY_PACKAGES_ENABLED=true
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_VERSION_NOTIFICATIONS_ENABLED=false
+      - GENERIC_TIMEZONE=UTC
+    volumes:
+      - n8n_quickpdf_data:/home/node/.n8n
+      - .:/custom/n8n-nodes-quickpdf:ro
+
+volumes:
+  n8n_quickpdf_data:

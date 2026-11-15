@@ -28,7 +28,11 @@
     "build": "tsc && gulp build:icons",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "validate": "node scripts/validate-build.mjs"
+    "validate": "node scripts/validate-build.mjs",
+    "test:demo": "node scripts/validate-demo-workflow.mjs",
+    "test:e2e": "node scripts/test-demo-e2e.mjs",
+    "test": "npm run validate && npm run test:demo && npm run test:e2e",
+    "n8n:local": "node scripts/n8n-local.mjs"
   },
   "files": [
     "dist"

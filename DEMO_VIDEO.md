@@ -4,6 +4,10 @@ Record **2–3 minutes**, **English** audio (optional but helps), **1080p** scre
 
 ## Before you record
 
+**Fastest path:** `npm run n8n:local` → open http://localhost:5678 (node pre-loaded; skip community install if recording from Docker). See [LOCAL_TESTING.md](./LOCAL_TESTING.md).
+
+**Cloud-style path:**
+
 1. Install on your n8n instance: **Settings → Community nodes → Install** → `n8n-nodes-quickpdf` (latest on npm).
 2. Create credential **Quick PDF Tools API**:
    - API Key: `qpdf_live_…` (blur in the video)

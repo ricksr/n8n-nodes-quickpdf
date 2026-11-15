@@ -48,9 +48,16 @@ Restart n8n, then add **Quick PDF Tools** from the node panel.
 
 ## Test
 
-1. Load CC0 [`locked.pdf`](https://quickpdftools.net/developers/oss/fixtures/locked.pdf) into binary `data`.
-2. **Quick PDF Tools** → Unlock, password `secret123`.
-3. Open output PDF in the next node or download.
+**Automated (same as demo workflow):**
+
+```bash
+export QPDF_API_KEY='qpdf_live_…'
+npm run test:e2e
+```
+
+**n8n UI:** `npm run n8n:local` → import `workflows/demo-verification.json`. Full guide: [LOCAL_TESTING.md](./LOCAL_TESTING.md).
+
+**Manual:** CC0 [`locked.pdf`](https://quickpdftools.net/developers/oss/fixtures/locked.pdf), Unlock, password `secret123`.
 
 ## Publish
 
