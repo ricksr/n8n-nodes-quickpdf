@@ -1,0 +1,64 @@
+# n8n Creator Portal — verification submission
+
+Use after **npm publish** from GitHub Actions (provenance required since May 2026).
+
+## 1. Publish pipeline
+
+1. **npm trusted publisher** (no token): https://www.npmjs.com/package/n8n-nodes-quickpdf/settings  
+   - Trusted Publishers → GitHub Actions  
+   - Owner: `ricksr`  
+   - Repository: `n8n-nodes-quickpdf`  
+   - Workflow: `publish.yml`
+
+   **Or** add `NPM_TOKEN` (granular publish token) to https://github.com/ricksr/n8n-nodes-quickpdf/settings/secrets/actions
+
+2. Push tag to trigger publish:
+
+   ```bash
+   git tag 0.1.0
+   git push origin 0.1.0
+   ```
+
+   Or: GitHub → Actions → **publish** → **Run workflow**.
+
+3. Confirm: https://www.npmjs.com/package/n8n-nodes-quickpdf
+
+## 2. Pre-submit scan
+
+```bash
+npx @n8n/scan-community-package n8n-nodes-quickpdf
+```
+
+## 3. Creator Portal
+
+- Portal: https://creators.n8n.io/nodes  
+- Alternate form (docs): https://internal.users.n8n.cloud/form/f0ff9304-f34a-420e-99da-6103a2f8ac5b
+
+### Copy-paste fields
+
+| Field | Value |
+|--------|--------|
+| npm package | `n8n-nodes-quickpdf` |
+| npm URL | https://www.npmjs.com/package/n8n-nodes-quickpdf |
+| GitHub | https://github.com/ricksr/n8n-nodes-quickpdf |
+| Short description | Unlock, protect, and repair PDFs on n8n Cloud via Quick PDF Tools API (no qpdf on host). |
+| Long description | Built for password-protected bank/statements → OCR pipelines. Operations: unlock (known password), protect, repair. 15 MiB max; files deleted after processing. Docs: https://quickpdftools.net/developers/n8n/ |
+| License | MIT |
+| Category | Productivity / Documents |
+
+## 4. Demo video (required for verification)
+
+Record ~2–3 min:
+
+1. npm package page `n8n-nodes-quickpdf`
+2. n8n → Settings → Community nodes → Install package
+3. Add **Quick PDF Tools** node → Unlock
+4. Credential: `qpdf_live_…` (blur key)
+5. Input: CC0 `locked.pdf`, password `secret123`
+6. Show successful execution + binary output
+
+Workflow template: https://quickpdftools.net/developers/oss/workflows/unlock-before-ocr-quickpdf-node.json
+
+## 5. Unverified install (works before verification)
+
+n8n Cloud → Settings → Community nodes → Install → `n8n-nodes-quickpdf`

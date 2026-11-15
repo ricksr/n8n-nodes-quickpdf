@@ -1,0 +1,43 @@
+# Publish n8n-nodes-quickpdf to npm with provenance (n8n verified-node requirement).
+# One-time npm: package Settings → Trusted Publishers → GitHub Actions
+#   owner: ricksr  repo: n8n-nodes-quickpdf  workflow: publish.yml
+# Or set NPM_TOKEN in this repo's Actions secrets.
+
+name: publish
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install and build
+        run: |
+          npm install --ignore-scripts
+          npm run build
+          npm run validate
+
+      - name: Publish to npm
+        run: |
+          if [ -n "$NPM_TOKEN" ]; then
+            npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+          fi
+          npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

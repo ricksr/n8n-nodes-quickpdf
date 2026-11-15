@@ -1,0 +1,56 @@
+{
+  "name": "n8n-nodes-quickpdf",
+  "version": "0.1.0",
+  "description": "Unlock, protect, and repair PDFs via Quick PDF Tools API v1 (n8n Cloud friendly — no qpdf on host)",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "pdf",
+    "unlock",
+    "quickpdftools"
+  ],
+  "license": "MIT",
+  "homepage": "https://quickpdftools.net/developers/n8n/",
+  "author": {
+    "name": "Quick PDF Tools",
+    "url": "https://quickpdftools.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ricksr/n8n-nodes-quickpdf.git"
+  },
+  "bugs": {
+    "url": "https://quickpdftools.net/contact.html"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "validate": "node scripts/validate-build.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/QuickPdfApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/QuickPdf/QuickPdf.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "gulp": "^5.0.0",
+    "n8n-workflow": "^1.82.0",
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "n8n-workflow": ">=1.0.0"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}
