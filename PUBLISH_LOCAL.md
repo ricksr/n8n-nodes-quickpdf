@@ -15,6 +15,33 @@ npm run build && npm run validate
 npm publish --access public
 ```
 
+### If you get `E403` (2FA required)
+
+Web `npm login` **does not** satisfy publish auth anymore. Use **one** of these:
+
+**A — OTP at publish time** (account has 2FA app enabled):
+
+```bash
+npm publish --access public --otp=123456
+```
+
+Replace `123456` with the current code from your authenticator (npmjs.com → account should show 2FA enabled).
+
+**B — Granular access token** (best for GitHub Actions too):
+
+1. https://www.npmjs.com/ → **Access Tokens** → **Generate New Token** → **Granular Access Token**
+2. Permissions: **Read and write** for packages (scope to `n8n-nodes-quickpdf` if offered, or all packages for first publish).
+3. Copy the token once, then:
+
+```bash
+npm logout
+npm config set //registry.npmjs.org/:_authToken='npm_PASTE_TOKEN_HERE'
+npm publish --access public
+```
+
+4. For CI: same token → GitHub secret `NPM_TOKEN` on `ricksr/n8n-nodes-quickpdf`.
+```
+
 Confirm:
 
 ```bash
