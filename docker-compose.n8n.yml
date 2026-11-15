@@ -7,14 +7,16 @@ services:
     ports:
       - "5678:5678"
     environment:
-      - N8N_CUSTOM_EXTENSIONS=/custom
+      # Directory scanned for **/*.node.js (package root, not parent of packages)
+      - N8N_CUSTOM_EXTENSIONS=/custom/n8n-nodes-quickpdf
       - N8N_COMMUNITY_PACKAGES_ENABLED=true
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
       - N8N_DIAGNOSTICS_ENABLED=false
       - N8N_VERSION_NOTIFICATIONS_ENABLED=false
       - GENERIC_TIMEZONE=UTC
     volumes:
       - n8n_quickpdf_data:/home/node/.n8n
-      - .:/custom/n8n-nodes-quickpdf:ro
+      - .:/custom/n8n-nodes-quickpdf
 
 volumes:
   n8n_quickpdf_data:

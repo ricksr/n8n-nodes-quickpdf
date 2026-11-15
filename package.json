@@ -32,7 +32,9 @@
     "test:demo": "node scripts/validate-demo-workflow.mjs",
     "test:e2e": "node scripts/test-demo-e2e.mjs",
     "test": "npm run validate && npm run test:demo && npm run test:e2e",
-    "n8n:local": "node scripts/n8n-local.mjs"
+    "n8n:local": "node scripts/n8n-local.mjs",
+    "n8n:bootstrap": "node scripts/n8n-docker-bootstrap.mjs",
+    "n8n:seed": "node scripts/n8n-seed-credential.mjs"
   },
   "files": [
     "dist"
