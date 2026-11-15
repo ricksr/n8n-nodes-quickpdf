@@ -10,6 +10,16 @@ Use after **npm publish** from GitHub Actions (provenance required since May 202
 
 The portal expects the standard **Resource + Operation** pattern (and `required: true` on Operation). Fix in **≥ 0.1.1** — re-submit the npm package URL after publishing.
 
+## “Your package appears to have external dependencies”
+
+Verified nodes must have **no `dependencies`** on npm (only `peerDependencies`: `n8n-workflow`). **0.1.3 and older** incorrectly listed `@n8n/scan-community-package` — that triggers this error.
+
+1. Confirm clean latest: `npm view n8n-nodes-quickpdf dependencies` → should be `undefined` or empty (use **≥ 0.1.4**).
+2. Pre-check: `npx @n8n/scan-community-package@beta n8n-nodes-quickpdf@0.1.5` (or current `latest`).
+3. In Creator Portal, resubmit the npm URL and ensure the review picks **latest** after staged publish approval.
+
+Unverified install via Settings → Community nodes still works without verification.
+
 ## If validation shows “Package does not support this n8n version”
 
 Ensure `package.json` includes `"n8n": { "n8nNodesApiVersion": 1, "strict": true }` and installable on **n8n ≥ 1.0.0** (your Cloud instance must be recent, e.g. **≥ 1.94** for community nodes UI). If your instance is older, upgrade n8n before installing.
