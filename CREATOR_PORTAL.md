@@ -70,16 +70,9 @@ npx @n8n/scan-community-package n8n-nodes-quickpdf
 
 ## 4. Demo video (required for verification)
 
-Record ~2–3 min:
+**Full script + import workflow:** [DEMO_VIDEO.md](./DEMO_VIDEO.md) and [`workflows/demo-verification.json`](./workflows/demo-verification.json).
 
-1. npm package page `n8n-nodes-quickpdf`
-2. n8n → Settings → Community nodes → Install package
-3. Add **Quick PDF Tools** node → Unlock
-4. Credential: `qpdf_live_…` (blur key)
-5. Input: CC0 `locked.pdf`, password `secret123`
-6. Show successful execution + binary output
-
-Workflow template: https://quickpdftools.net/developers/oss/workflows/unlock-before-ocr-quickpdf-node.json
+Short version: unlisted **2–3 min** screencast showing npm package → community install → credential **Test** → run demo workflow → green execution + binary `data` on output. Upload link in the portal when asked for manual review.
 
 ## 5. Unverified install (works before verification)
 

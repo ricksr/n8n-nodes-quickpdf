@@ -1,0 +1,67 @@
+{
+  "name": "Quick PDF Tools — Demo for Creator Portal",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://quickpdftools.net/developers/oss/fixtures/locked.pdf",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          }
+        }
+      },
+      "id": "fetch-locked-pdf",
+      "name": "Fetch test PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 300],
+      "notesInFlow": true,
+      "notes": "Public CC0 fixture — password secret123"
+    },
+    {
+      "parameters": {
+        "resource": "document",
+        "operation": "unlock",
+        "binaryPropertyName": "data",
+        "password": "secret123",
+        "outputBinaryPropertyName": "data"
+      },
+      "id": "quickpdf-unlock",
+      "name": "Quick PDF Tools",
+      "type": "n8n-nodes-quickpdf.quickPdf",
+      "typeVersion": 1,
+      "position": [520, 300],
+      "credentials": {
+        "quickPdfApi": {
+          "id": "REPLACE_ME",
+          "name": "Quick PDF Tools API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [[{ "node": "Fetch test PDF", "type": "main", "index": 0 }]]
+    },
+    "Fetch test PDF": {
+      "main": [[{ "node": "Quick PDF Tools", "type": "main", "index": 0 }]]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
