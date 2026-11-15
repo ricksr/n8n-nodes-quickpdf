@@ -2,6 +2,10 @@
 
 Use after **npm publish** from GitHub Actions (provenance required since May 2026).
 
+## “Error getting author email from npm”
+
+`package.json` must include **`author.email`** and it must match your **npm maintainer email** (Creator Portal login). For this package: `sutirtharej@gmail.com` (same as `npm view n8n-nodes-quickpdf maintainers`). Fixed in **≥ 0.1.2** — republish, approve staged release if needed, resubmit.
+
 ## If validation shows “Operation is required”
 
 The portal expects the standard **Resource + Operation** pattern (and `required: true` on Operation). Fix in **≥ 0.1.1** — re-submit the npm package URL after publishing.
