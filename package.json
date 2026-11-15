@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-quickpdf",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Unlock, protect, and repair PDFs via Quick PDF Tools API v1 (n8n Cloud friendly — no qpdf on host)",
   "keywords": [
     "n8n-community-node-package",
@@ -34,6 +34,7 @@
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,
+    "strict": true,
     "credentials": [
       "dist/credentials/QuickPdfApi.credentials.js"
     ],

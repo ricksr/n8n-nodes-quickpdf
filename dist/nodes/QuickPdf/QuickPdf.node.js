@@ -9,7 +9,7 @@ class QuickPdf {
             name: "quickPdf",
             icon: "file:quickpdf.svg",
             group: ["transform"],
-            version: 1,
+            version: [1],
             subtitle: '={{$parameter["operation"]}}',
             description: "Server-side PDF unlock, protect, and repair (Quick PDF Tools API v1)",
             defaults: { name: "Quick PDF" },
@@ -18,22 +18,48 @@ class QuickPdf {
             credentials: [{ name: "quickPdfApi", required: true }],
             properties: [
                 {
+                    displayName: "Resource",
+                    name: "resource",
+                    type: "options",
+                    noDataExpression: true,
+                    options: [
+                        {
+                            name: "Document",
+                            value: "document",
+                            description: "PDF file operations via Quick PDF Tools API",
+                        },
+                    ],
+                    default: "document",
+                    required: true,
+                },
+                {
                     displayName: "Operation",
                     name: "operation",
                     type: "options",
                     noDataExpression: true,
+                    displayOptions: {
+                        show: {
+                            resource: ["document"],
+                        },
+                    },
                     options: [
-                        { name: "Unlock", value: "unlock", description: "Remove password when password is known" },
-                        { name: "Protect", value: "protect", description: "Encrypt with a password" },
-                        { name: "Repair", value: "repair", description: "Rebuild damaged cross-references" },
+                        { name: "Unlock", value: "unlock", action: "Unlock a PDF with a known password" },
+                        { name: "Protect", value: "protect", action: "Encrypt a PDF with a password" },
+                        { name: "Repair", value: "repair", action: "Repair damaged PDF structure" },
                     ],
                     default: "unlock",
+                    required: true,
                 },
                 {
                     displayName: "Binary Property",
                     name: "binaryPropertyName",
                     type: "string",
                     default: "data",
+                    displayOptions: {
+                        show: {
+                            resource: ["document"],
+                        },
+                    },
                     description: "Input PDF binary field from the previous node",
                 },
                 {
@@ -42,8 +68,12 @@ class QuickPdf {
                     type: "string",
                     typeOptions: { password: true },
                     default: "",
+                    required: true,
                     displayOptions: {
-                        show: { operation: ["unlock", "protect"] },
+                        show: {
+                            resource: ["document"],
+                            operation: ["unlock", "protect"],
+                        },
                     },
                     description: "Password for unlock or protect",
                 },
@@ -52,6 +82,11 @@ class QuickPdf {
                     name: "outputBinaryPropertyName",
                     type: "string",
                     default: "data",
+                    displayOptions: {
+                        show: {
+                            resource: ["document"],
+                        },
+                    },
                     description: "Where to write the resulting PDF bytes",
                 },
             ],
@@ -66,6 +101,10 @@ class QuickPdf {
         const apiKey = String(credentials.apiKey || "");
         for (let i = 0; i < items.length; i++) {
             try {
+                const resource = this.getNodeParameter("resource", i);
+                if (resource !== "document") {
+                    throw new n8n_workflow_1.NodeApiError(this.getNode(), { message: `Unknown resource "${resource}"` });
+                }
                 const operation = this.getNodeParameter("operation", i);
                 const binaryPropertyName = this.getNodeParameter("binaryPropertyName", i);
                 const outputBinaryPropertyName = this.getNodeParameter("outputBinaryPropertyName", i);
@@ -121,7 +160,7 @@ class QuickPdf {
                 const newItem = {
                     json: {
                         ...items[i].json,
-                        quickPdf: { operation, apiBase, bytes: body.length },
+                        quickPdf: { resource, operation, apiBase, bytes: body.length },
                     },
                     binary: {
                         ...(items[i].binary || {}),

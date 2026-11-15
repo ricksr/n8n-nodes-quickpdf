@@ -6,6 +6,7 @@ import type {
 } from "n8n-workflow";
 import { NodeApiError, NodeConnectionType } from "n8n-workflow";
 
+type PdfResource = "document";
 type PdfOperation = "unlock" | "protect" | "repair";
 
 export class QuickPdf implements INodeType {
@@ -14,7 +15,7 @@ export class QuickPdf implements INodeType {
     name: "quickPdf",
     icon: "file:quickpdf.svg",
     group: ["transform"],
-    version: 1,
+    version: [1],
     subtitle: '={{$parameter["operation"]}}',
     description: "Server-side PDF unlock, protect, and repair (Quick PDF Tools API v1)",
     defaults: { name: "Quick PDF" },
@@ -23,22 +24,48 @@ export class QuickPdf implements INodeType {
     credentials: [{ name: "quickPdfApi", required: true }],
     properties: [
       {
+        displayName: "Resource",
+        name: "resource",
+        type: "options",
+        noDataExpression: true,
+        options: [
+          {
+            name: "Document",
+            value: "document",
+            description: "PDF file operations via Quick PDF Tools API",
+          },
+        ],
+        default: "document",
+        required: true,
+      },
+      {
         displayName: "Operation",
         name: "operation",
         type: "options",
         noDataExpression: true,
+        displayOptions: {
+          show: {
+            resource: ["document"],
+          },
+        },
         options: [
-          { name: "Unlock", value: "unlock", description: "Remove password when password is known" },
-          { name: "Protect", value: "protect", description: "Encrypt with a password" },
-          { name: "Repair", value: "repair", description: "Rebuild damaged cross-references" },
+          { name: "Unlock", value: "unlock", action: "Unlock a PDF with a known password" },
+          { name: "Protect", value: "protect", action: "Encrypt a PDF with a password" },
+          { name: "Repair", value: "repair", action: "Repair damaged PDF structure" },
         ],
         default: "unlock",
+        required: true,
       },
       {
         displayName: "Binary Property",
         name: "binaryPropertyName",
         type: "string",
         default: "data",
+        displayOptions: {
+          show: {
+            resource: ["document"],
+          },
+        },
         description: "Input PDF binary field from the previous node",
       },
       {
@@ -47,8 +74,12 @@ export class QuickPdf implements INodeType {
         type: "string",
         typeOptions: { password: true },
         default: "",
+        required: true,
         displayOptions: {
-          show: { operation: ["unlock", "protect"] },
+          show: {
+            resource: ["document"],
+            operation: ["unlock", "protect"],
+          },
         },
         description: "Password for unlock or protect",
       },
@@ -57,6 +88,11 @@ export class QuickPdf implements INodeType {
         name: "outputBinaryPropertyName",
         type: "string",
         default: "data",
+        displayOptions: {
+          show: {
+            resource: ["document"],
+          },
+        },
         description: "Where to write the resulting PDF bytes",
       },
     ],
@@ -72,6 +108,11 @@ export class QuickPdf implements INodeType {
 
     for (let i = 0; i < items.length; i++) {
       try {
+        const resource = this.getNodeParameter("resource", i) as PdfResource;
+        if (resource !== "document") {
+          throw new NodeApiError(this.getNode(), { message: `Unknown resource "${resource}"` });
+        }
+
         const operation = this.getNodeParameter("operation", i) as PdfOperation;
         const binaryPropertyName = this.getNodeParameter("binaryPropertyName", i) as string;
         const outputBinaryPropertyName = this.getNodeParameter("outputBinaryPropertyName", i) as string;
@@ -139,7 +180,7 @@ export class QuickPdf implements INodeType {
         const newItem: INodeExecutionData = {
           json: {
             ...items[i].json,
-            quickPdf: { operation, apiBase, bytes: body.length },
+            quickPdf: { resource, operation, apiBase, bytes: body.length },
           },
           binary: {
             ...(items[i].binary || {}),

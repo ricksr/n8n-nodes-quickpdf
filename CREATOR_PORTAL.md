@@ -2,6 +2,14 @@
 
 Use after **npm publish** from GitHub Actions (provenance required since May 2026).
 
+## If validation shows “Operation is required”
+
+The portal expects the standard **Resource + Operation** pattern (and `required: true` on Operation). Fix in **≥ 0.1.1** — re-submit the npm package URL after publishing.
+
+## If validation shows “Package does not support this n8n version”
+
+Ensure `package.json` includes `"n8n": { "n8nNodesApiVersion": 1, "strict": true }` and installable on **n8n ≥ 1.0.0** (your Cloud instance must be recent, e.g. **≥ 1.94** for community nodes UI). If your instance is older, upgrade n8n before installing.
+
 ## 1. Publish pipeline
 
 1. **npm trusted publisher** (no token): https://www.npmjs.com/package/n8n-nodes-quickpdf/settings  

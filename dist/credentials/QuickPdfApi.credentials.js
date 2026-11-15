@@ -6,6 +6,7 @@ class QuickPdfApi {
         this.name = "quickPdfApi";
         this.displayName = "Quick PDF Tools API";
         this.documentationUrl = "https://quickpdftools.net/developers/";
+        this.supportedNodes = ["n8n-nodes-quickpdf.quickPdf"];
         this.properties = [
             {
                 displayName: "API Key",
@@ -13,6 +14,7 @@ class QuickPdfApi {
                 type: "string",
                 typeOptions: { password: true },
                 default: "",
+                required: true,
                 description: 'Bearer key starting with qpdf_live_ (from quickpdftools.net/developers)',
             },
             {
@@ -20,6 +22,7 @@ class QuickPdfApi {
                 name: "apiBase",
                 type: "string",
                 default: "https://api.quickpdftools.net",
+                required: true,
                 description: "Override for staging or self-hosted API",
             },
         ];
@@ -29,6 +32,13 @@ class QuickPdfApi {
                 headers: {
                     Authorization: '=Bearer {{$credentials.apiKey}}',
                 },
+            },
+        };
+        this.test = {
+            request: {
+                baseURL: "={{$credentials.apiBase.replace(/\\/$/, '')}}",
+                url: "/api/v1/capabilities",
+                method: "GET",
             },
         };
     }
