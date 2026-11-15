@@ -7,12 +7,16 @@ class QuickPdf {
         this.description = {
             displayName: "Quick PDF Tools",
             name: "quickPdf",
-            icon: "file:quickpdf.svg",
+            icon: {
+                light: "file:quickpdf.svg",
+                dark: "file:quickpdf.dark.svg",
+            },
             group: ["transform"],
             version: [1],
             subtitle: '={{$parameter["operation"]}}',
             description: "Server-side PDF unlock, protect, and repair (Quick PDF Tools API v1)",
             defaults: { name: "Quick PDF" },
+            usableAsTool: true,
             inputs: ["main" /* NodeConnectionType.Main */],
             outputs: ["main" /* NodeConnectionType.Main */],
             credentials: [{ name: "quickPdfApi", required: true }],
@@ -98,7 +102,6 @@ class QuickPdf {
         const returnData = [];
         const credentials = await this.getCredentials("quickPdfApi");
         const apiBase = String(credentials.apiBase || "https://api.quickpdftools.net").replace(/\/$/, "");
-        const apiKey = String(credentials.apiKey || "");
         for (let i = 0; i < items.length; i++) {
             try {
                 const resource = this.getNodeParameter("resource", i);
@@ -117,7 +120,7 @@ class QuickPdf {
                 const buffer = Buffer.from(binary.data, "base64");
                 const form = new FormData();
                 const mime = binary.mimeType || "application/pdf";
-                form.append("file", new Blob([buffer], { type: mime }), binary.fileName || "document.pdf");
+                form.append("file", new Blob([new Uint8Array(buffer)], { type: mime }), binary.fileName || "document.pdf");
                 if (operation !== "repair") {
                     const password = this.getNodeParameter("password", i);
                     if (!password) {
@@ -125,12 +128,9 @@ class QuickPdf {
                     }
                     form.append("password", password);
                 }
-                const response = await this.helpers.httpRequest({
+                const response = await this.helpers.httpRequestWithAuthentication.call(this, "quickPdfApi", {
                     method: "POST",
                     url: `${apiBase}/api/v1/pdf/${operation}`,
-                    headers: {
-                        Authorization: `Bearer ${apiKey}`,
-                    },
                     body: form,
                     encoding: "arraybuffer",
                     returnFullResponse: true,
@@ -157,7 +157,7 @@ class QuickPdf {
                     : operation === "protect"
                         ? (binary.fileName || "document.pdf").replace(/\.pdf$/i, "-protected.pdf")
                         : (binary.fileName || "document.pdf").replace(/\.pdf$/i, "-repaired.pdf");
-                const newItem = {
+                returnData.push({
                     json: {
                         ...items[i].json,
                         quickPdf: { resource, operation, apiBase, bytes: body.length },
@@ -166,15 +166,15 @@ class QuickPdf {
                         ...(items[i].binary || {}),
                         [outputBinaryPropertyName]: await this.helpers.prepareBinaryData(body, outName, "application/pdf"),
                     },
-                };
-                returnData.push(newItem);
+                    pairedItem: { item: i },
+                });
             }
             catch (error) {
                 if (this.continueOnFail()) {
                     returnData.push({ json: { error: error.message }, pairedItem: { item: i } });
                     continue;
                 }
-                throw error;
+                throw new n8n_workflow_1.NodeApiError(this.getNode(), error);
             }
         }
         return [returnData];

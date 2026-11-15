@@ -7,6 +7,11 @@ export class QuickPdfApi implements ICredentialType {
 
   documentationUrl = "https://quickpdftools.net/developers/";
 
+  icon = {
+    light: "file:quickpdf.svg",
+    dark: "file:quickpdf.svg",
+  } as const;
+
   supportedNodes = ["n8n-nodes-quickpdf.quickPdf"];
 
   properties: INodeProperties[] = [

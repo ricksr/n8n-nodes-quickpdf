@@ -6,6 +6,10 @@ class QuickPdfApi {
         this.name = "quickPdfApi";
         this.displayName = "Quick PDF Tools API";
         this.documentationUrl = "https://quickpdftools.net/developers/";
+        this.icon = {
+            light: "file:quickpdf.svg",
+            dark: "file:quickpdf.svg",
+        };
         this.supportedNodes = ["n8n-nodes-quickpdf.quickPdf"];
         this.properties = [
             {

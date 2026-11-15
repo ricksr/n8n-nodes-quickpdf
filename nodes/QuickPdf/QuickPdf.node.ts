@@ -3,6 +3,7 @@ import type {
   INodeExecutionData,
   INodeType,
   INodeTypeDescription,
+  JsonObject,
 } from "n8n-workflow";
 import { NodeApiError, NodeConnectionType } from "n8n-workflow";
 
@@ -13,12 +14,16 @@ export class QuickPdf implements INodeType {
   description: INodeTypeDescription = {
     displayName: "Quick PDF Tools",
     name: "quickPdf",
-    icon: "file:quickpdf.svg",
+    icon: {
+      light: "file:quickpdf.svg",
+      dark: "file:quickpdf.dark.svg",
+    },
     group: ["transform"],
     version: [1],
     subtitle: '={{$parameter["operation"]}}',
     description: "Server-side PDF unlock, protect, and repair (Quick PDF Tools API v1)",
     defaults: { name: "Quick PDF" },
+    usableAsTool: true,
     inputs: [NodeConnectionType.Main],
     outputs: [NodeConnectionType.Main],
     credentials: [{ name: "quickPdfApi", required: true }],
@@ -104,7 +109,6 @@ export class QuickPdf implements INodeType {
 
     const credentials = await this.getCredentials("quickPdfApi");
     const apiBase = String(credentials.apiBase || "https://api.quickpdftools.net").replace(/\/$/, "");
-    const apiKey = String(credentials.apiKey || "");
 
     for (let i = 0; i < items.length; i++) {
       try {
@@ -129,7 +133,7 @@ export class QuickPdf implements INodeType {
         const mime = binary.mimeType || "application/pdf";
         form.append(
           "file",
-          new Blob([buffer], { type: mime }),
+          new Blob([new Uint8Array(buffer)], { type: mime }),
           binary.fileName || "document.pdf",
         );
 
@@ -141,12 +145,9 @@ export class QuickPdf implements INodeType {
           form.append("password", password);
         }
 
-        const response = await this.helpers.httpRequest({
+        const response = await this.helpers.httpRequestWithAuthentication.call(this, "quickPdfApi", {
           method: "POST",
           url: `${apiBase}/api/v1/pdf/${operation}`,
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-          },
           body: form,
           encoding: "arraybuffer",
           returnFullResponse: true,
@@ -177,7 +178,7 @@ export class QuickPdf implements INodeType {
               ? (binary.fileName || "document.pdf").replace(/\.pdf$/i, "-protected.pdf")
               : (binary.fileName || "document.pdf").replace(/\.pdf$/i, "-repaired.pdf");
 
-        const newItem: INodeExecutionData = {
+        returnData.push({
           json: {
             ...items[i].json,
             quickPdf: { resource, operation, apiBase, bytes: body.length },
@@ -190,14 +191,14 @@ export class QuickPdf implements INodeType {
               "application/pdf",
             ),
           },
-        };
-        returnData.push(newItem);
+          pairedItem: { item: i },
+        });
       } catch (error) {
         if (this.continueOnFail()) {
           returnData.push({ json: { error: (error as Error).message }, pairedItem: { item: i } });
           continue;
         }
-        throw error;
+        throw new NodeApiError(this.getNode(), error as JsonObject);
       }
     }
 
